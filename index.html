@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI 기반 나눔 스페이스</title>
+  <style>
+    body { font-family: "Segoe UI", sans-serif; margin: 0; background: #f0f4f8; }
+    header { background: #4a90e2; color: white; padding: 1rem 2rem; text-align: center; }
+    .login { position: fixed; top: 20px; right: 30px; background: white; padding: 0.6rem; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); width: 180px; text-align: center; }
+    .login h3 { margin: 0 0 0.5rem; font-size: 0.95rem; color: #333; }
+    .login input { width: 85%; padding: 0.2rem; margin-bottom: 0.3rem; border: 1px solid #ccc; border-radius: 5px; font-size: 0.7rem; }
+    .login button { width: 90%; padding: 0.4rem; background-color: #4a90e2; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 0.8rem; }
+    .login .links {
+      display: flex;
+      justify-content: center;
+      gap: 0.4rem;
+      white-space: nowrap;
+      margin-top: 0.3rem;
+    }
+    .login .links a {
+      font-size: 0.6rem;
+      color: #4a90e2;
+      text-decoration: none;
+    }
+    .login .links .sep {
+      font-size: 0.6rem;
+      color: #333;
+      line-height: 1;
+    }
+    .main { display: flex; flex-direction: column; align-items: center; padding: 1rem 2rem 4rem; }
+    .description { width: 60%; background: white; padding: 1rem 1.5rem; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center; margin-bottom: 1rem; }
+    .welcome { font-size: 1.3rem; font-weight: bold; margin-bottom: 1rem; color: #333; }
+    .menu-row { display: flex; justify-content: space-between; width: 100%; max-width: 900px; margin: 2rem 0; }
+    .column { display: flex; flex-direction: column; gap: 1.5rem; }
+    .button { border: none; padding: 2rem; border-radius: 10px; font-size: 1.4rem; cursor: pointer; text-align: left; text-decoration: none; color: white; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 1rem; }
+    .button img { width: 36px; height: 36px; }
+    .skyblue { background: #b3e0f9; color: #003b5c; }
+    .skyblue:hover { background: #92d0f7; }
+    .pink { background: #fcd5e3; color: #5c0029; }
+    .pink:hover { background: #fbbcd4; }
+    .small-links { position: fixed; right: 30px; bottom: 220px; display: flex; flex-direction: column; gap: 1rem; }
+    .small-links button { font-size: 1.1rem; color: #333; background: #e0e0e0; padding: 0.7rem 1rem; border-radius: 8px; text-align: left; display: flex; align-items: center; gap: 0.8rem; border: none; cursor: pointer; }
+    .small-links img { width: 28px; height: 28px; }
+    .chatbot { position: fixed; bottom: 20px; right: 30px; background: #fff; border: 1px solid #ccc; padding: 0.6rem; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); text-align: center; width: 180px; }
+    .chatbot h4 { margin-top: 0; font-size: 0.95rem; }
+    .chatbot p { margin: 0.5rem 0; font-size: 0.9rem; color: #666; }
+    .chatbot input { width: 90%; padding: 0.3rem; border-radius: 5px; border: 1px solid #ddd; margin-top: 0.5rem; font-size: 0.8rem; }
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; }
+    .modal-content { background: #fff; padding: 2rem; border-radius: 8px; width: 90%; max-width: 400px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    .modal-content h3 { margin-top: 0; font-size: 1.2rem; }
+    .modal-content label, .modal-content select, .modal-content input { display: block; width: 100%; margin-bottom: 1rem; font-size: 0.9rem; }
+    .modal-content ul { list-style: disc; margin-left: 1.5rem; margin-bottom: 1rem; }
+    .modal-content button { padding: 0.8rem 1rem; background: #4a90e2; color: #fff; border: none; border-radius: 5px; cursor: pointer; font-size: 1rem; }
+
+    /* Footer logo and text */
+    .footer {
+      position: fixed;
+      bottom: 15px;
+      left: 15px;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 0.8rem;
+      background: rgba(255,255,255,0.9);
+      border-radius: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    .footer img {
+      width: 28px;
+      height: 28px;
+    }
+    .footer span {
+      font-family: 'Segoe UI', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #4a90e2;
+      letter-spacing: 0.5px;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+  <header><h1>AI 기반 나눔 스페이스</h1></header>
+  <div class="main">
+    <div class="description">
+      <div class="welcome">AI 기반 나눔 스페이스에 오신 걸 환영합니다!</div>
+      <p>과학 수업에 필요한 기자재와 전문가를 쉽게 연결하고 함께 실험과 강의를 진행할 수 있습니다.</p>
+    </div>
+    <div class="menu-row">
+      <div class="column">
+        <button class="button skyblue" onclick="openModal('reserve')"><img src="https://img.icons8.com/color/48/microscope.png" alt="현미경"/>실험 기자재 예약하기</button>
+        <button class="button skyblue" onclick="openModal('match')"><img src="https://img.icons8.com/emoji/48/woman-teacher.png" alt="선생님"/>투게더 선생님 만나기</button>
+      </div>
+      <div class="column">
+        <button class="button pink" onclick="openModal('shareItem')"><img src="https://img.icons8.com/office/40/test-tube.png" alt="나누기"/>실험 기자재 나누기</button>
+        <button class="button pink" onclick="openModal('registerTeacher')"><img src="https://img.icons8.com/color/48/teacher.png" alt="등록"/>투게더 선생님 등록하기</button>
+      </div>
+    </div>
+  </div>
+  <div id="modal" class="modal"><div class="modal-content" id="modal-content"></div></div>
+  <div class="small-links">
+    <button onclick="openModal('reserveHistory')"><img src="https://img.icons8.com/ios-filled/50/calendar.png" alt="달력"/>예약현황 보기</button>
+    <button onclick="openModal('shareList')"><img src="https://img.icons8.com/ios-filled/50/box.png" alt="나눔 리스트"/>기자재 나눔 리스트</button>
+    <button><img src="https://img.icons8.com/color/48/school-building.png" alt="기관"/>함께하는 기관 보기</button>
+  </div>
+  <div class="login">
+    <h3>로그인</h3>
+    <input type="text" placeholder="아이디 입력" />
+    <input type="password" placeholder="비밀번호 입력" />
+    <button>로그인</button>
+    <div class="links">
+      <a href="#">아이디 찾기</a><span class="sep">|</span><a href="#">비밀번호 찾기</a><span class="sep">|</span><a href="#">회원가입</a>
+    </div>
+  </div>
+  <div class="chatbot"><h4>예약 도우미 챗봇</h4><p>무엇을 도와드릴까요?</p><input type="text" placeholder="질문을 입력하세요..." /></div>
+
+  <!-- Footer with logo and branding -->
+    <!-- Footer with logo and branding -->
+    <!-- Footer with logo and branding -->
+  <div class="footer">
+    <!-- Updated sharing AI icon -->
+    <img src="https://img.icons8.com/fluency/48/share-2.png" alt="Sharing Logo" />
+    <span>AI-based Sharing Space</span>
+  </div>
+
+  <script>
+    const subtopics = { physics: ["역학", "열과 에너지", "파동과 광학", "전기와 자기", "현대 물리"], chemistry: ["원자 구조", "주기율과 화학결합", "화학 반응과 평형", "유기 화합물", "회분 분석"], biology: ["세포와 조직", "유전과 진화", "생태계와 환경", "인체와 건강", "생명 공학"], earth: ["지구와 우주", "대기와 기후", "지질과 암석", "해양과 수권", "지구 내부"] };
+    const shareItems = { physics: ["레이저 간섭계", "진공 챔버", "고정밀 질량 분석기", "광전자 스펙트로미터"], chemistry: ["고성능 액체 크로마토그래피(HPLC)", "FT-IR 분광기", "질량 분석기(MS)", "열중량분석기(TGA)"], biology: ["주사전자현미경(SEM)", "유세포분석기(Flow Cytometer)", "실시간 PCR 장비", "초고속 원심분리기"], earth: ["다중채널 지진 계측기", "지구물리학 시뮬레이터", "3D 지형 스캐너", "지하 시추 장비"] };
+    function openModal(type) {
+      const modal = document.getElementById('modal');
+      const content = document.getElementById('modal-content');
+      modal.style.display = 'flex';
+      content.innerHTML = '';
+      if(type === 'reserve') {
+        content.innerHTML = `<h3>실험 기자재 예약</h3>
+          <label>기자재:</label>
+          <input type='text' placeholder='기자재명 입력' />
+          <label>예약 일시:</label>
+          <input type='datetime-local' />
+          <button onclick="alert('예약이 완료되었습니다.'); closeModal();">예약하기</button>`;
+      } else if(type === 'reserveHistory') {
+        content.innerHTML = `<h3>예약 현황 보기</h3>
+          <ul><li>사용자 A: 현미경 - 2025-07-20</li><li>사용자 B: 비커 - 2025-07-21</li></ul>
+          <button onclick="closeModal()">닫기</button>`;
+      } else if(type === 'match') {
+        content.innerHTML = `<h3>전문가 매칭 요청</h3>
+          <label>과목 선택:</label>
+          <select id='subject-select' onchange='populateSubtopics()'>
+            <option value=''>선택하세요</option>
+            <option value='physics'>물리</option>
+            <option value='chemistry'>화학</option>
+            <option value='biology'>생명과학</option>
+            <option value='earth'>지구과학</option>
+          </select>
+          <label>세부 영역 선택:</label>
+          <select id='topic-select'><option value=''>먼저 과목을 선택하세요</option></select>
+          <label>희망 일자:</label>
+          <input type='date' />
+          <button onclick="alert('매칭 요청이 접수되었습니다.'); closeModal();">요청하기</button>`;
+      } else if(type === 'shareList') {
+        content.innerHTML = `<h3>기자재 나눔 리스트</h3>
+          <label>과목 선택:</label>
+          <select id='share-subject-select' onchange='populateShareList()'>
+            <option value=''>선택하세요</option>
+            <option value='physics'>물리</option>
+            <option value='chemistry'>화학</option>
+            <option value='biology'>생명과학</option>
+            <option value='earth'>지구과학</option>
+          </select>
+          <ul id='share-list'><li>먼저 과목을 선택하세요</li></ul>
+          <button onclick="closeModal()">닫기</button>`;
+      } else if(type === 'shareItem') {
+        content.innerHTML = `<h3>실험 기자재 나누기</h3>
+          <label>기자재 이름:</label>
+          <input type='text' placeholder='기자재명 입력' />
+          <label>등록자:</label>
+          <input type='text' placeholder='등록자명 입력' />
+          <label>등록 기관:</label>
+          <input type='text' placeholder='등록 기관 입력' />
+          <label>나눔 가능 일자:</label>
+          <input type='date' />
+          <button onclick="alert('나눔 정보가 등록되었습니다.'); closeModal();">등록하기</button>`;
+      } else if(type === 'registerTeacher') {
+        content.innerHTML = `<h3>투게더 선생님 등록</h3>
+          <label>과목 선택:</label>
+          <select id='reg-subject-select' onchange='populateRegSubtopics()'>
+            <option value=''>선택하세요</option>
+            <option value='physics'>물리</option>
+            <option value='chemistry'>화학</option>
+            <option value='biology'>생명과학</option>
+            <option value='earth'>지구과학</option>
+          </select>
+          <label>세부 영역 선택:</label>
+          <select id='reg-topic-select'><option value=''>먼저 과목을 선택하세요</option></select>
+          <label>강의 주제:</label>
+          <input type='text' placeholder='강의 주제 입력' />
+          <label>희망 일자:</label>
+          <input type='date' />
+          <button onclick="alert('선생님 등록이 완료되었습니다.'); closeModal();">등록하기</button>`;
+      }
+    }
+    function populateSubtopics() {
+      const subj = document.getElementById('subject-select').value;
+      const topicSelect = document.getElementById('topic-select');
+      topicSelect.innerHTML = '<option value="">선택하세요</option>';
+      if(subtopics[subj]) subtopics[subj].forEach(t => {
+        const o = document.createElement('option'); o.value = t; o.textContent = t; topicSelect.appendChild(o);
+      });
+    }
+    function populateShareList() {
+      const subj = document.getElementById('share-subject-select').value;
+      const list = document.getElementById('share-list'); list.innerHTML = '';
+      if(shareItems[subj]) shareItems[subj].forEach(item => {
+        const li = document.createElement('li'); li.textContent = item; list.appendChild(li);
+      });
+      if(!shareItems[subj]) list.innerHTML = '<li>먼저 과목을 선택하세요</li>';
+    }
+    function populateRegSubtopics() {
+      const subj = document.getElementById('reg-subject-select').value;
+      const regSelect = document.getElementById('reg-topic-select'); regSelect.innerHTML = '<option value="">선택하세요</option>';
+      if(subtopics[subj]) subtopics[subj].forEach(t => {
+        const opt = document.createElement('option'); opt.value = t; opt.textContent = t; regSelect.appendChild(opt);
+      });
+    }
+    function closeModal() { document.getElementById('modal').style.display = 'none'; }
+    window.onclick = e => { if(e.target.id === 'modal') closeModal(); };
+  </script>
+</body>
+</html>
